@@ -1,0 +1,88 @@
+# docker-compose.yml
+#
+# This file defines all the services our app needs to run.
+# One command (docker compose up) starts everything.
+#
+# Services:
+#   db          - PostgreSQL database with PostGIS extension
+#   redis       - Redis cache for storing temporary data
+#   ai-service  - Our Python FastAPI microservice for AI features
+#
+# Note: We're NOT putting Next.js in Docker for development.
+# Next.js runs better directly on your machine with npm run dev
+# because hot reload is faster. Docker is for the services it depends on.
+
+services:
+
+  db:
+    # This image comes with PostgreSQL 16 AND PostGIS pre-installed.
+    # PostGIS adds geospatial features (proximity search, distance calc).
+    # Without this special image, we'd have to install PostGIS manually.
+    image: postgis/postgis:16-3.4
+
+    # These create the database and user when the container first starts.
+    # They match what we put in our .env file's DATABASE_URL.
+    environment:
+      POSTGRES_DB: pawpals
+      POSTGRES_USER: pawpals
+      POSTGRES_PASSWORD: localdev
+
+    # Maps port 5432 inside the container to 5432 on your machine.
+    # This lets our Next.js app (running outside Docker) connect to
+    # the database at localhost:5432.
+    ports:
+      - "5432:5432"
+
+    # This keeps your database data alive even if you stop the container.
+    # Without this, every time you run docker compose down, all your
+    # data (users, pets, events) would be deleted.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    # Alpine is a tiny Linux distribution. redis:7-alpine is only ~30MB
+    # compared to ~130MB for the full image. Same Redis, smaller download.
+    image: redis:7-alpine
+
+    # Maps Redis port. Our Next.js app connects at localhost:6379.
+    ports:
+      - "6379:6379"
+
+  ai-service:
+    # Instead of pulling a pre-built image, this builds from our Dockerfile.
+    # Docker reads ai-service/Dockerfile and creates a custom image
+    # with Python + our dependencies + our code.
+    build: ./ai-service
+
+    # Maps port 8000 so we can reach the FastAPI service at localhost:8000.
+    ports:
+      - "8000:8000"
+
+    environment:
+      # The AI service connects to Postgres using "db" as the hostname.
+      # Docker Compose creates a network where services can find each
+      # other by name. "db" here refers to the db service above.
+      DATABASE_URL: postgresql://pawpals:localdev@db:5432/pawpals
+
+      # This will hold your OpenAI API key. Empty for now.
+      # You'll add the real key in Sprint 5 when you build AI features.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-placeholder}
+
+    # This means: don't start the AI service until the database is running.
+    # Without this, the AI service might try to connect to Postgres
+    # before Postgres has finished starting up.
+    depends_on:
+      - db
+
+    # This mounts your local code into the container in real-time.
+    # When you edit a file in ai-service/, the change appears inside
+    # the container immediately. Combined with uvicorn's --reload flag,
+    # the server auto-restarts. No need to rebuild the container.
+    volumes:
+      - ./ai-service:/app
+
+# Named volumes persist data between container restarts.
+# "pgdata" stores all your PostgreSQL data on your hard drive
+# so it survives docker compose down / docker compose up cycles.
+volumes:
+  pgdata:
