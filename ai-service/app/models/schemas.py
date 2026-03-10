@@ -7,6 +7,7 @@ FastAPI uses these to:
   2. Generate API documentation at localhost:8000/docs
   3. Provide autocomplete in our code editor
 
+  
 Each endpoint has a Request model (what the client sends)
 and a Response model (what we send back).
 """
