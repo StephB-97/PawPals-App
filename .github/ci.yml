@@ -1,0 +1,56 @@
+# ci.yml - Runs automatically on every Pull Request to develop or main
+#
+# This checks your code for problems BEFORE it gets merged.
+# If any step fails, the PR gets a red X and can't be merged.
+# This protects your codebase from broken code.
+#
+# What it checks:
+#   1. Does the code install without errors?
+#   2. Does ESLint find any code quality issues?
+#   3. Does TypeScript find any type errors?
+
+name: CI
+
+# When does this run?
+# Every time someone opens or updates a PR targeting develop or main
+on:
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the repo code onto the GitHub runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      # Step 4: Generate Prisma client (needed for type checking)
+      - name: Generate Prisma client
+        working-directory: web
+        run: npx prisma generate
+
+      # Step 5: Run ESLint to catch code quality issues
+      - name: Run ESLint
+        working-directory: web
+        run: npx next lint
+
+      # Step 6: Run TypeScript compiler to catch type errors
+      - name: Type check
+        working-directory: web
+        run: npx tsc --noEmit
