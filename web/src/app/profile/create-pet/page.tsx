@@ -18,53 +18,99 @@ function PetForm(){
                     </div>
                 </div>
                 {/* Container for input content */}
-                <div>
+                <div className = "p-5 flex flex-col gap-2">
                     {/* Name input */}
                     <div className = "flex flex-col">
-                        <label htmlFor="">Name</label>
-                        <input type="text" placeholder="Pet's name" />
+                        <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">
+                            Name
+                        </label>
+                        <input 
+                            type="text" 
+                            placeholder="Pet's name" 
+                            className = "w-full py-3 px-3.5 border-2 rounded-lg outline-none text-[#1A1A2E] focus:border-[#E8734A]"
+                        />
                     </div>
                      {/* Species toggle */}
-                    <div className = "flex flex-col">
-                        <label htmlFor="">Species</label>
+                    <div className = "flex flex-col gap-2">
+                        <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Species</label>
                         {/* Button wrapper */}
-                        <div>
-                            <button>🐕 Dog</button>
-                            <button>🐱 Cat</button>
+                        <div className = "grid grid-cols-2 gap-2">
+                            <button className = "border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5">
+                                🐕 Dog
+                            </button>
+                            <button className = "border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5">
+                                🐱 Cat
+                            </button>
                         </div>
                     </div>
                     {/* Pet size's toggle */}
                     <div className = "flex flex-col">
-                        <label htmlFor="">Size</label>
+                        <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Size</label>
                         {/* Button wrapper */}
-                        <div>
-                            <button>S</button>
-                            <button>M</button>
-                            <button>L</button>   
+                        <div className = "grid grid-cols-3 gap-2">
+                            <button className = "border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5">S</button>
+                            <button className = "border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5">M</button>
+                            <button className = "border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5">L</button>   
                         </div>
                     </div>
                     {/* Temperament toggle*/}
                     <div className = "flex flex-col">
-                        <label htmlFor="">Temperament</label>
+                        <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Temperament</label>
                         {/* Button wrapper */}
-                        <div>
+                        <div className = "flex flex-wrap gap-2">
                             {/* Clickable chips */}
-                            <button>Friendly</button>
-                            <button>Playful</button>
-                            <button>Shy</button>
-                            <button>Energetic</button>
-                            <button>Calm</button>
-                            <button>Curious</button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                Friendly
+                            </button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                Playful
+                            </button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                 Shy
+                            </button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                Energetic
+                            </button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                Calm
+                            </button>
+                            <button 
+                                className ="py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-full p-2.5 cursor-pointer"
+                            >
+                                Curious
+                            </button>
                         </div>
                     </div>
                     {/* Ai section */}
-                    <div>
+                    <div className = "flex flex-col">
                         {/* Generate Bio with AI" button */}
-                        <button>Generate Bio with AI</button>
+                        <button 
+                            className = "w-full py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5 cursor-pointer"
+                        >
+                            Generate Bio with AI
+                        </button>
                         {/* Bio text area */}
-                        <input type="text" name="" id="" />
+                        <input 
+                            type="text" 
+                            placeholder="Bio would appear here..."
+                            className ="w-full py-3 px-4"
+                        />
                     </div>
-                    <button>Save Pet</button>
+                    <button
+                        className = "w-full h-16 py-2 px-3.5 border border-[#E8DDD0] bg-[#FFF1E8] rounded-lg p-2.5 cursor-pointer"
+                    >
+                        Save Pet
+                    </button>
                 </div>
 
            </main>
