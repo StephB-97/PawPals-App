@@ -118,7 +118,7 @@ function PetForm(){
                                         name = "breed"
                                         value = {formData.breed}
                                         placeholder="Pet's breed" 
-                                        className = "w-full py-3 px-3.5 border-2 border-[#E5E7EB] rounded-lg outline-none text-[#1A1A2E] focus:border-[#E8734A]"
+                                        className = " w-full py-3 px-3.5 border-2 border-[#E5E7EB] rounded-lg outline-none text-[#1A1A2E] focus:border-[#E8734A]"
                                         onChange = {handleChange}
                                     />
 
