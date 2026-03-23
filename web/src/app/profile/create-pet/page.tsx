@@ -57,7 +57,7 @@ function PetForm(){
                 <div className="mx-auto w-full max-w-md bg-white min-h-screen md:min-h-0 md:max-w-4xl md:rounded-2xl md:shadow-sm">
                     {/* header <- Add pet */}
                     <div className="flex items-center border-b border-[#E8DDD0] gap-[0.9rem] pt-12 px-5 pb-3 md:px-6">
-                        <span className = "text-[1rem] text-[#1A1A2E] cursor-pointer md:hidden">&larr;</span>
+                        <span className = "text-[1rem] text-[#1A1A2E] cursor-pointer lg:hidden">&larr;</span>
                         <span className = "text-[1rem] text-[#1A1A2E] md:text-[1.1rem] font-bold">Add Pet</span>
                     </div>
                     <form  onSubmit = {handleSubmit} className ="p-5 md:p-8">
@@ -252,12 +252,21 @@ function PetForm(){
                                         onChange = {handleChange}
                                     />
                                 </div>
-                                <button
-                                    type ="submit"
-                                    className = "w-full h-16 py-2 px-3.5 border border-[#E8734A] bg-[linear-gradient(135deg,_#FF6B6B,_#FF8C42)] text-[#1A1A2E] rounded-lg cursor-pointer text-[white] font-semibold"
-                                >
-                                    Save Pet
-                                </button>
+                                <div className = "flex gap-3">    
+                                    <button
+                                        type ="submit"
+                                        className = "flex-1 py-3 px-4 border border-[#E8734A] bg-[linear-gradient(135deg,_#FF6B6B,_#FF8C42)] text-[#1A1A2E] rounded-lg cursor-pointer text-[white] font-semibold"
+                                    >
+                                        Save Pet
+                                    </button>
+                                    <button
+                                        type ="submit"
+                                        className = " hidden py-3 px-5 border border-[#E8734A] bg-[white] text-[#1A1A2E] rounded-lg cursor-pointer text-[#1A1A2E] font-semibold lg:block"
+                                    >
+                                        Cancel   
+                                    </button>
+                                </div>
+                                
                             </div>
                         </div>
                     </form>
