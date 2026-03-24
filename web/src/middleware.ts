@@ -17,7 +17,8 @@ const isPublicRoute = createRouteMatcher([
   "/",                // Landing page
   "/sign-in(.*)",     // Sign-in page and its sub-routes
   "/sign-up(.*)",     // Sign-up page and its sub-routes
-  "/api/webhooks(.*)" // Webhook endpoints (Clerk sends events here)
+  "/api/webhooks(.*)", // Webhook endpoints (Clerk sends events here)
+  "/test-upload",     // Cloudinary image upload dev test page (Sprint 1)
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
