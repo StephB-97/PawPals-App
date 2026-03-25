@@ -162,7 +162,7 @@ function PetForm(){
 
                                 {/* Age */}
                                 <div className = "flex flex-col">
-                                    <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Age</label>
+                                    <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Age (Months)</label>
                                     <input 
                                         name = "age"
                                         value = {formData.age}

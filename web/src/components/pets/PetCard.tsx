@@ -1,3 +1,4 @@
+"use client";
 type PetCardProps = {
     name: string;
     breed: string;
