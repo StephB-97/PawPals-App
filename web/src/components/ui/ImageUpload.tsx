@@ -3,10 +3,10 @@
 import { useRef, useState } from "react";
 
 type Props = {
-  onUpload: (url: string) => void;
+  onUploaded: (url: string) => void;
 };
 
-export default function ImageUpload({ onUpload }: Props) {
+export default function ImageUpload({ onUploaded }: Props) {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -32,11 +32,17 @@ export default function ImageUpload({ onUpload }: Props) {
       }
     );
 
+    //error handling for failed upload (necessary for testing with invalid credentials)
     const data = await res.json();
-
-    setImage(data.secure_url);
-if (onUpload) {
-  onUpload(data.secure_url);
+    if (!data.secure_url) {
+      alert('Upload failed. Check your Cloudinary credentials.');
+      setLoading(false);
+      return;
+    }
+setImage(data.secure_url);
+    
+if (onUploaded) {
+  onUploaded(data.secure_url);
 }
     setLoading(false);
   };
