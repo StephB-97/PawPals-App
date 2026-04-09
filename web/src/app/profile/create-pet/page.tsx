@@ -54,7 +54,7 @@ function PetForm(){
        <>
            {/* wrapper */}
            <main className = "min-h-screen bg-[#FDF6EE] md:px-6 md:py-10">
-                <div className="mx-auto w-full max-w-md bg-white min-h-screen md:min-h-0 md:max-w-4xl md:rounded-2xl md:shadow-sm">
+                <div className="mx-auto w-full max-w-md bg-white min-h-screen md:min-h-0 md:max-w-4xl md:rounded-2xl md:shadow-sm"> 
                     {/* header <- Add pet */}
                     <div className="flex items-center border-b border-[#E8DDD0] gap-[0.9rem] pt-12 px-5 pb-3 md:px-6">
                         <span className = "text-[1rem] text-[#1A1A2E] cursor-pointer lg:hidden">&larr;</span>
