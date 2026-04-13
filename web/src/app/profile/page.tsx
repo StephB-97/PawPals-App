@@ -3,7 +3,28 @@ import { SignOutButton } from "@clerk/nextjs";
 import PetCard from "@/components/pets/PetCard";
 import Link from "next/link";
 
+type Pet = {
+    id: string;
+    name: string;
+    breed: string;
+    species: "dog" | "cat";
+};
+
 function Profile (){
+    const pets: Pet[] = [
+        {
+            id: "1",
+            name: "Buddy",
+            breed: "Golden Retriever",
+            species: "dog",
+        },
+        {
+            id: "2",
+            name: "Whiskers",
+            breed: "Siamese",
+            species: "cat",
+        }
+    ]
     return(
         <>
             {/* Wrapper */}
@@ -50,25 +71,20 @@ function Profile (){
                         <section className="mt-6">
                             <h2 className="mb-3 text-base font-semibold text-gray-900">My Pets</h2>
                             <div className="mt-4 flex flex-col items-center gap-4 lg:flex-row">
-                                <div className="relative w-fit">
-                                <PetCard name="Buddy" breed="Golden Retriever" species="dog" />
-                                <Link
-                                    href="/profile/edit-pet/123"
-                                    className="absolute right-3 top-3 text-xs font-medium text-orange-500 hover:underline"
-                                >
-                                    Edit
-                                </Link>
-                                </div>
-
-                                <div className="relative w-fit">
-                                <PetCard name="Whiskers" breed="Siamese" species="cat" />
-                                <Link
-                                    href="/profile/edit-pet/123"
-                                    className="absolute right-3 top-3 text-xs font-medium text-orange-500 hover:underline"
-                                >
-                                    Edit
-                                </Link>
-                                </div>
+                                {pets.map((pet) =>{
+                                    return(
+                                    // Pet card
+                                    <div key = {pet.id} className="relative w-fit">
+                                        <PetCard name= {pet.name} breed= {pet.breed} species={pet.species} />
+                                        <Link
+                                            href="/profile/edit-pet/123"
+                                            className="absolute right-3 top-3 text-xs font-medium text-orange-500 hover:underline"
+                                        >
+                                            Edit
+                                        </Link>
+                                    </div>
+                                    )
+                                })}
                             </div>
                         </section>
                         {/* Sign Out */}
