@@ -23,12 +23,12 @@ function Profile (){
             name: "Whiskers",
             breed: "Siamese",
             species: "cat",
-        }
+        },
     ]
     return(
         <>
             {/* Wrapper */}
-            <main className = "min-h-screen bg-[#FDF6EE] lg:px-8 lg:py-6">
+            <main className = "min-h-screen bg-[#FDF6EE] lg:px-8 lg:py-10">
                 <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:grid lg:grid-cols-[320px_1fr] lg:items-start">
                     {/* inter-wrapper 1 */}
                     <div>
@@ -70,11 +70,11 @@ function Profile (){
                         </div>
                     </div>
                     {/* inter-wrapper 2 */}
-                    <div className ="px-4 pb-6">
+                    <div className ="px-4 pb-6 md:px-10">
                         {/* Pet card display section */}
-                        <section className="mt-6">
+                        <section className="mt-6 lg:mt-0">
                             <h2 className="mb-3 text-base font-semibold text-gray-900">My Pets</h2>
-                            <div className="mt-4 flex flex-col items-center gap-4 lg:flex-row">
+                            <div className="mt-4 flex flex-col items-center gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
                                 {pets.map((pet) =>{
                                     return(
                                     // Pet card
