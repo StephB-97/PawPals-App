@@ -42,7 +42,7 @@ function Profile (){
                                 {/* Username */}
                                 <h2 className = "mt-3 text-xl font-bold text-[#1A1A2E]">Sarah Johnson</h2>
                                 <h1 className ="text-sm text-gray-600">Upper West Side, New York</h1>
-                                <button className="mt-3 bg-white text-[#FF6B6B] border-2 border-[#FF6B6B] rounded-[10px] px-5 py-2 text-[13px] font-semibold cursor-pointer">
+                                <button className="mt-3 bg-white text-[#E8734A] border-2 border-[#E8734A] rounded-[10px] px-5 py-2 text-[13px] font-semibold cursor-pointer">
                                     Edit Profile
                                 </button>
                             </div>  
@@ -58,12 +58,12 @@ function Profile (){
                                 </div>
                                 {/* Amount of matches */}
                                 <div className = "rounded-xl border border-[#E8DDD0] p-3">
-                                    <h2 className = "text-[#FF6B6B] font-bold text-2xl">3</h2>
+                                    <h2 className = "text-[#FF6B6B] font-bold text-2xl">5</h2>
                                     <span className="text-gray-600">Matches</span>
                                 </div>
                                 {/* Amount of events */}
                                 <div className = "rounded-xl border border-[#E8DDD0] p-3">
-                                    <h2 className = "text-[#FF6B6B] font-bold text-2xl">5</h2>
+                                    <h2 className = "text-[#FF6B6B] font-bold text-2xl">3</h2>
                                     <span className="text-gray-600">Events</span>
                                 </div>
                             </div>
@@ -81,7 +81,7 @@ function Profile (){
                                     <div key = {pet.id} className="relative w-fit">
                                         <PetCard name= {pet.name} breed= {pet.breed} species={pet.species} />
                                         <Link
-                                            href="/profile/edit-pet/123"
+                                            href={`/profile/edit-pet/${pet.id}`}
                                             className="absolute right-3 top-3 text-xs font-medium text-orange-500 hover:underline"
                                         >
                                             Edit

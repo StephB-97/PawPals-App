@@ -12,7 +12,11 @@ type PetFormData ={
     bio:string;
 }
 
-function editPet(){
+function EditPet(){
+    
+    const params = useParams();
+    const petId = params.id;
+
     const [formData, setFormData] = useState<PetFormData>({
         name: "Buddy",
         species: "dog",
@@ -277,4 +281,4 @@ function editPet(){
        </>
    )
 }
-export default editPet;
+export default EditPet;
