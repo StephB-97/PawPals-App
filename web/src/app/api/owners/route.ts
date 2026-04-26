@@ -2,25 +2,56 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   const { userId } = await auth()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { displayName, email, neighborhood, city } = await req.json()
-
-  const owner = await prisma.owner.upsert({
-    where:  { clerkId: userId },
-    update: {},
-    create: {
-      clerkId:     userId,
-      email:       email       ?? '',
-      displayName: displayName ?? '',
-      neighborhood,
-      city,
+  const owner = await prisma.owner.findUnique({
+    where: { clerkId: userId },
+    include: {
+      pets: {
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' },
+      },
     },
   })
 
-  return NextResponse.json(owner, { status: 201 })
+  if (!owner) {
+    return NextResponse.json({ error: 'Owner not found' }, { status: 404 })
+  }
+
+  return NextResponse.json(owner, { status: 200 })
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { displayName, neighborhood, city, latitude, longitude, avatarUrl } = body
+
+    // Build update object only with provided fields
+    const updateData: any = {}
+    if (displayName !== undefined) updateData.displayName = displayName
+    if (neighborhood !== undefined) updateData.neighborhood = neighborhood
+    if (city !== undefined) updateData.city = city
+    if (latitude !== undefined) updateData.latitude = latitude
+    if (longitude !== undefined) updateData.longitude = longitude
+    if (avatarUrl !== undefined) updateData.avatarUrl = avatarUrl
+
+    const owner = await prisma.owner.update({
+      where: { clerkId: userId },
+      data: updateData,
+    })
+
+    return NextResponse.json(owner, { status: 200 })
+  } catch (error) {
+    console.error('PATCH /api/owners/me error:', error)
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+  }
 }
