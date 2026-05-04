@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+
 export default function EventsPage() {
   const pills = [
     "All Events",
@@ -7,6 +10,7 @@ export default function EventsPage() {
     "🥾 Hiking",
     "🏊 Swimming",
   ];
+  const [active, setActive] = useState("All Events");
   return(
     <>
       <main className="min-h-screen bg-[#FDF6EE] p-8">
@@ -18,7 +22,11 @@ export default function EventsPage() {
             return (
               <button
                 key={index}
-                className="px-4 py-2 rounded-full border border-[#E8DDD0] bg-white text-sm"
+                onClick={() => setActive(pill)}
+                className={`px-4 py-2 rounded-full border text-sm ${
+                  active === pill ? 
+                  "bg-[#E8734A] text-white border-[#E8734A]": "bg-white text-[#3D2C2C] border-[#E8DDD0]"
+                }`}
               >
                 {pill}
               </button>
