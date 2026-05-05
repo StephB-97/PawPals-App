@@ -1,7 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EventsPage() {
+  
+  type Event = {
+    id: string;
+    title: string;
+    category: string;
+    date: string;
+    time: string;
+    location: string;
+    attending: number;
+    image?: string;
+  };
+
   const pills = [
     "All Events",
     "🎉 Social",
@@ -11,6 +23,15 @@ export default function EventsPage() {
     "🏊 Swimming",
   ];
   const [active, setActive] = useState("All Events");
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((data: Event[]) => setEvents(data))
+      .catch((err) => console.error(err));
+  }, []);
+
   return(
     <>
       <main className="min-h-screen bg-[#FDF6EE] p-8">
@@ -32,6 +53,50 @@ export default function EventsPage() {
               </button>
             );
           })}
+            <div className="mt-6 space-y-[14px]">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="mb-[14px] overflow-hidden rounded-xl bg-white shadow-sm"
+              >
+                <div className="relative flex h-[140px] items-center justify-center bg-gradient-to-br from-[#C4A882] to-[#8B7355] text-5xl">
+                  {event.image || "🐕🌳"}
+
+                  <div className="absolute right-[10px] top-[10px] flex h-8 w-8 items-center justify-center rounded-full bg-white text-base shadow-md">
+                    ♡
+                  </div>
+
+                  <div className="absolute bottom-[10px] left-[10px]">
+                    <span className="rounded-full bg-[#E8734A] px-2 py-1 text-[11px] text-white">
+                      {event.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="px-4 py-[14px]">
+                  <div className="text-[16px] font-semibold text-[#3D2C2C]">
+                    {event.title}
+                  </div>
+
+                  <div className="mt-[6px] text-[12px] text-[#A89279]">
+                    📅 {event.date}
+                  </div>
+
+                  <div className="text-[12px] text-[#A89279]">
+                    🕐 {event.time}
+                  </div>
+
+                  <div className="text-[12px] text-[#A89279]">
+                    📍 {event.location}
+                  </div>
+
+                  <div className="text-[12px] text-[#A89279]">
+                    👥 {event.attending} attending
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main> 
     </>
