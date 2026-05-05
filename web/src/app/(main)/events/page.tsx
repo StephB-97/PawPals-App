@@ -53,7 +53,7 @@ export default function EventsPage() {
               </button>
             );
           })}
-            <div className="mt-6 space-y-[14px]">
+            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {events.map((event) => (
               <div
                 key={event.id}
