@@ -21,6 +21,8 @@ function PetForm(){
         temperament: [],
         bio: ""
     })
+    const [isGeneratingBio, setIsGeneratingBio] = useState(false);
+    const [bioError, setBioError] = useState("");
     function handleChange(e : React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>){
         const { name, value } = e.target;
         setFormData((prev) =>({
@@ -49,6 +51,50 @@ function PetForm(){
     }
     function handleSubmit(e:React.SyntheticEvent){
         e.preventDefault()
+    }
+
+    const canGenerateBio =
+        formData.name.trim().length > 0 && formData.species.trim().length > 0;
+
+    async function handleGenerateBio() {
+        if (!canGenerateBio || isGeneratingBio) {
+            return;
+        }
+
+        setIsGeneratingBio(true);
+        setBioError("");
+
+        try {
+            const response = await fetch("/api/ai/generate-bio", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    species: formData.species,
+                    breed: formData.breed,
+                    size: formData.size,
+                    ageMonths: formData.age,
+                    temperament: formData.temperament,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data?.bio) {
+                throw new Error("Failed to generate bio.");
+            }
+
+            setFormData((prev) => ({
+                ...prev,
+                bio: data.bio,
+            }));
+        } catch {
+            setBioError("Could not generate bio. Please try again.");
+        } finally {
+            setIsGeneratingBio(false);
+        }
     }
    return(
        <>
@@ -239,10 +285,19 @@ function PetForm(){
                                     {/* Generate Bio with AI" button */}
                                     <button 
                                         type ="button"
-                                        className="w-full py-3 px-3.5 rounded-lg border-2 border-[#E8734A] bg-gradient-to-r from-[#FFD8C2] to-[#FFF1E8] text-[#E8734A] font-semibold"
+                                        onClick={handleGenerateBio}
+                                        disabled={!canGenerateBio || isGeneratingBio}
+                                        className={`w-full py-3 px-3.5 rounded-lg border-2 font-semibold transition ${
+                                            !canGenerateBio || isGeneratingBio
+                                                ? "cursor-not-allowed border-[#D6C7B8] bg-[#F6F1EA] text-[#A79B90]"
+                                                : "cursor-pointer border-[#E8734A] bg-gradient-to-r from-[#FFD8C2] to-[#FFF1E8] text-[#E8734A]"
+                                        }`}
                                     >
-                                        ✨ Generate Bio with AI
+                                        {isGeneratingBio ? "Generating..." : "✨ Generate Bio with AI"}
                                     </button>
+                                    {bioError && (
+                                        <p className="text-sm text-red-600">{bioError}</p>
+                                    )}
                                     {/* Bio text area */}
                                     <textarea 
                                         name = "bio" 
