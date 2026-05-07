@@ -64,6 +64,77 @@ function PetForm() {
       setError('Name and species are required');
       return;
     }
+   return(
+       <>
+           {/* wrapper */}
+           <main className = "min-h-screen bg-[#FDF6EE] md:px-6 md:py-10">
+                <div className="mx-auto w-full max-w-md bg-white min-h-screen md:min-h-0 md:max-w-4xl md:rounded-2xl md:shadow-sm"> 
+                    {/* header <- Add pet */}
+                    <div className="flex items-center border-b border-[#E8DDD0] gap-[0.9rem] pt-12 px-5 pb-3 md:px-6">
+                        <span className = "text-[1rem] text-[#1A1A2E] cursor-pointer lg:hidden">&larr;</span>
+                        <span className = "text-[1rem] text-[#1A1A2E] md:text-[1.1rem] font-bold">Add Pet</span>
+                    </div>
+                    <form  onSubmit = {handleSubmit} className ="p-5 md:p-8">
+                        {/* Photo upload section */}
+                        <div className ="flex flex-col gap-6 md:grid md:grid-cols-[260px_1fr] md:gap-8">
+                            <div 
+                                className ="w-full h-[130px] flex flex-col items-center justify-center border-2 border-dashed rounded-2xl border-[#E8DDD0] bg-[#F9FAFB] md:h-[280px]"
+                            >
+                                <span className ="text-3xl md:text-4xl">📷</span>
+                                <span className = "mt-2 text-sm text-gray-600">Upload Photo</span>
+                            </div>
+                            {/* Container for input content */} 
+                            <div className = "flex flex-col gap-4">
+                                {/* Name input */}
+                                <div className = "flex flex-col">
+                                    <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">
+                                        Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name = "name"
+                                        value={formData.name}
+                                        placeholder="Pet's name" 
+                                        className = "w-full py-3 px-3.5 border-2 border-[#E5E7EB] rounded-lg outline-none text-[#1A1A2E] focus:border-[#E8734A]"
+                                        onChange = {handleChange}
+                                    />
+                                </div>
+                                {/* Species toggle */}
+                                <div className = "flex flex-col">
+                                    <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Species</label>
+                                    {/* Button wrapper */}
+                                    <div className = "grid grid-cols-2 gap-2">
+                                        <button 
+                                            type ="button"
+                                            onClick = {() => {handleSpeciesToggle("dog")}}
+                                            className = {`rounded-lg p-2.5 text-[#1A1A2E] ${
+                                                formData.species === "dog" ? "bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]" : "border border-[#E8DDD0] bg-[white]"
+                                            }`}
+                                        >
+                                            🐕 Dog
+                                        </button>
+                                        <button 
+                                            type ="button"
+                                            onClick = {() => {handleSpeciesToggle("cat")}}
+                                            className = {`rounded-lg p-2.5 text-[#1A1A2E] ${
+                                                formData.species === "cat" ? "bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]" : "border border-[#E8DDD0] bg-[white]"
+                                            }`}
+                                        >
+                                            🐱 Cat
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* Breed toggle */}
+                                <div className = "flex flex-col">
+                                    <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Breed</label>
+                                    <input 
+                                        type="text" 
+                                        name = "breed"
+                                        value = {formData.breed}
+                                        placeholder="Pet's breed" 
+                                        className = " w-full py-3 px-3.5 border-2 border-[#E5E7EB] rounded-lg outline-none text-[#1A1A2E] focus:border-[#E8734A]"
+                                        onChange = {handleChange}
+                                    />
 
     setLoading(true);
     setError(null);
