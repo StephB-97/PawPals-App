@@ -68,6 +68,10 @@ services:
       # You'll add the real key in Sprint 5 when you build AI features.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-placeholder}
 
+      # Browser origins allowed to call FastAPI directly (CORS). Add your Vercel URL(s).
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      ALLOWED_ORIGIN_REGEX: ${ALLOWED_ORIGIN_REGEX:-}
+
     # This means: don't start the AI service until the database is running.
     # Without this, the AI service might try to connect to Postgres
     # before Postgres has finished starting up.
