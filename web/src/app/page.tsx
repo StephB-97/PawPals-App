@@ -1,7 +1,28 @@
-import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import Navbar from '@/components/layout/Navbar';
 
-export default function Home() {
+export default async function Home() {
+  const user = await currentUser();
+
+  // If authenticated, check if they have a complete profile
+  if (user?.id) {
+    const owner = await prisma.owner.findUnique({
+      where: { clerkId: user.id },
+    });
+
+    // If profile is incomplete, redirect to onboarding
+    if (!owner || !owner.displayName || !owner.neighborhood) {
+      redirect('/onboarding');
+    }
+
+    // If profile is complete, redirect to dashboard
+    redirect('/dashboard');
+  }
+
+  // If not authenticated, show landing page
   return (
     <main className="min-h-screen bg-[#FDF6EE] text-[#3D2C2C]">
       <Navbar />
