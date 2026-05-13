@@ -154,7 +154,7 @@ export default function ExploreMapView() {
   }
 
   return (
-    <div className="relative h-[calc(100vh-8.5rem)] min-h-[620px] overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white">
+    <div className="relative h-[calc(100vh-12rem)] min-h-[500px] max-h-screen overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white">
       <div className="absolute left-3 right-3 top-3 z-20 flex flex-wrap gap-2">
         {filterPills.map((pill) => {
           const active = selectedSpecies === pill.value;
