@@ -6,21 +6,25 @@ import Navbar from '@/components/layout/Navbar';
 
 export default async function Home() {
   const user = await currentUser();
+console.log('Current user:', user?.id);
 
-  // If authenticated, check if they have a complete profile
-  if (user?.id) {
-    const owner = await prisma.owner.findUnique({
-      where: { clerkId: user.id },
-    });
+if (user?.id) {
+  const owner = await prisma.owner.findUnique({
+    where: { clerkId: user.id },
+  });
+  
+  console.log('Owner found:', !!owner);
+  console.log('Owner displayName:', owner?.displayName);
+  console.log('Owner neighborhood:', owner?.neighborhood);
 
-    // If profile is incomplete, redirect to onboarding
-    if (!owner || !owner.displayName || !owner.neighborhood) {
-      redirect('/onboarding');
-    }
-
-    // If profile is complete, redirect to dashboard
-    redirect('/dashboard');
+  if (!owner || !owner.displayName || !owner.neighborhood) {
+    console.log('Redirecting to onboarding - owner missing or incomplete');
+    redirect('/onboarding');
   }
+
+  console.log('Redirecting to dashboard');
+  redirect('/dashboard');
+}
 
   // If not authenticated, show landing page
   return (
