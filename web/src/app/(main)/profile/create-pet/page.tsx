@@ -63,6 +63,7 @@ function PetForm() {
       setError('Add your pet’s name and species before generating a bio.');
       return;
     }
+<<<<<<< HEAD:web/src/app/profile/create-pet/page.tsx
     setBioLoading(true);
     setError(null);
     try {
@@ -99,6 +100,8 @@ function PetForm() {
       setBioLoading(false);
     }
   }
+=======
+>>>>>>> origin/develop:web/src/app/(main)/profile/create-pet/page.tsx
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
