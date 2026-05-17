@@ -1,14 +1,13 @@
 """
-main.py - The entry point for our FastAPI AI microservice.
+main.py - Entry point for the PawPals AI microservice.
 
-This is like the "index.js" or "app.js" in Express.
-It creates the server, sets up middleware, and connects all our routes.
-
-The AI service runs separately from the Next.js app on port 8000.
-Next.js handles the main website (port 3000), this handles AI features.
+Registers all routers. No external API keys required.
 """
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.routers import bio, embed, matching, tags
 
 app = FastAPI(
     title="PawPals AI Service",
@@ -16,7 +15,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow the Next.js app to call this service
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -25,8 +23,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(bio.router)
+app.include_router(embed.router)
+app.include_router(matching.router)
+app.include_router(tags.router)
 
-   
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "pawpals-ai"}
