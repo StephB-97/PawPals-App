@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import Navbar from '@/components/layout/navbar';
+=======
 import Image from "next/image";
+>>>>>>> origin/develop
 
 export default function Home() {
   return (
