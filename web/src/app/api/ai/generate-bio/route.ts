@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { parseApiErrorMessage } from '@/lib/parse-api-error';
 
-type GenerateBioRequest = {
+type Body = {
   name?: string;
   species?: string;
   breed?: string;
@@ -10,34 +11,25 @@ type GenerateBioRequest = {
 };
 
 export async function POST(request: Request) {
-  try {
-    const body = (await request.json()) as GenerateBioRequest;
-    const name = body.name?.trim();
-    const species = body.species?.trim();
-
-    if (!name || !species) {
-      return NextResponse.json(
-        { error: "Name and species are required." },
-        { status: 400 }
-      );
-    }
-
-    const aiServiceUrl = process.env.AI_SERVICE_URL;
-    if (!aiServiceUrl) {
-      return NextResponse.json(
-        { error: "AI service is not configured." },
-        { status: 500 }
-      );
-    }
-
-    const response = await fetch(`${aiServiceUrl}/ai/generate-bio`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  const base = process.env.AI_SERVICE_URL;
+  if (!base) {
+    return NextResponse.json(
+      {
+        error:
+          'Bio generation is not configured. Add AI_SERVICE_URL or write a short bio manually.',
       },
+      { status: 503 }
+    );
+  }
+
+  try {
+    const body = (await request.json()) as Body;
+    const response = await fetch(`${base.replace(/\/$/, '')}/ai/generate-bio`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name,
-        species,
+        name: body.name?.trim(),
+        species: body.species?.trim(),
         breed: body.breed?.trim() || null,
         size: body.size?.trim() || null,
         age_months: Number.isFinite(body.ageMonths) ? body.ageMonths : 0,
@@ -46,24 +38,24 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to generate bio from AI service." },
-        { status: 502 }
+      const msg = await parseApiErrorMessage(
+        response,
+        'Could not reach the bio service. Please try again.'
       );
+      return NextResponse.json({ error: msg }, { status: 502 });
     }
 
     const data = (await response.json()) as { bio?: string };
     if (!data.bio) {
       return NextResponse.json(
-        { error: "AI response did not include bio text." },
+        { error: 'The bio service returned an empty response.' },
         { status: 502 }
       );
     }
-
     return NextResponse.json({ bio: data.bio });
   } catch {
     return NextResponse.json(
-      { error: "Unable to generate bio right now." },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     );
   }

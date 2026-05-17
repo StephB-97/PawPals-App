@@ -3,8 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
+    "postinstall": "prisma generate",
     "dev": "next dev --webpack",
+    "build": "next build --webpack",
+=======
+    "dev": "next dev",
     "build": "next build",
+>>>>>>> origin/develop
     "start": "next start",
     "lint": "eslint"
   },
@@ -18,7 +24,6 @@
     "next-cloudinary": "^6.17.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "svix": "^1.89.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -30,6 +35,10 @@
     "eslint-config-next": "16.1.6",
     "prisma": "^6.19.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   }
 }
