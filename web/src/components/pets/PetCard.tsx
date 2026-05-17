@@ -1,21 +1,30 @@
+"use client";
 type PetCardProps = {
-  name: string;
-  breed: string;
-  species: 'dog' | 'cat';
-};
+    name: string;
+    breed: string;
+    species: "dog" | "cat";
+  };
+  
+  function PetCard({ name, breed, species }: PetCardProps) {
 
-export default function PetCard({ name, breed, species }: PetCardProps) {
-  const emoji = species === 'dog' ? '🐕' : '🐱';
+    const isDog = species === "dog";
 
-  return (
-    <div className="rounded-2xl border border-[#E8DDD0] bg-white p-4 shadow-sm">
-      <div className="flex h-32 items-center justify-center rounded-xl bg-[#FFF1E8] text-5xl">
-        {emoji}
+    const bgColor = isDog ? "bg-[#FFF3B0]" : "bg-[#FFE4CC]";
+    const emoji = isDog ? "🐕" : "🐱";
+  
+    return (
+      <div className="w-48 rounded-2xl border border-[#E8DDD0] bg-white">
+        {/* Placeholder field for pet Photo */}
+        <div className={`flex items-center justify-center h-28 ${bgColor}`}>
+            <span className="text-3xl">{emoji}</span>
+        </div>
+        {/* text content */}
+        <div className="p-3" >
+            <h1 className="text-sm font-semibold text-[#1A1A2E]" >{name}</h1>
+            <h2 className="text-xs text-gray-500">{breed}</h2>
+        </div>
       </div>
-      <div className="mt-3">
-        <h3 className="text-lg font-semibold text-[#3D2C2C]">{name}</h3>
-        <p className="text-sm text-[#8B7355]">{breed || species}</p>
-      </div>
-    </div>
-  );
-}
+    );
+  }
+  
+  export default PetCard;

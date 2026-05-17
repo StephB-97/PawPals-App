@@ -72,7 +72,6 @@ export async function GET(request: Request) {
 
     const availablePets = pets.filter((p) => !swipedPetIds.has(p.id));
 
-    // Re-rank by trait-based compatibility via AI service
     const aiServiceUrl = process.env.AI_SERVICE_URL;
     if (aiServiceUrl && owner.pets.length > 0 && availablePets.length > 1) {
       try {

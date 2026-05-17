@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const navItems = [
-  { href: '/dashboard', label: 'Home', icon: '🏠' },
-  { href: '/discover', label: 'Discover', icon: '🔍' },
-  { href: '/events', label: 'Events', icon: '🎉' },
-  { href: '/matches', label: 'Matches', icon: '❤️' },
-  { href: '/profile', label: 'Profile', icon: '👤' },
+const tabs = [
+  { href: "/discover", icon: "❤️", label: "Discover" },
+  { href: "/matches", icon: "💬", label: "Matches" },
+  { href: "/explore", icon: "📍", label: "Explore" },
+  { href: "/events", icon: "📅", label: "Events" },
+  { href: "/profile", icon: "👤", label: "Profile" },
 ];
 
 export default function BottomNav() {
@@ -16,23 +16,26 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#E8DDD0] bg-white md:hidden">
-      <div className="flex items-center justify-around py-2">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+      <ul className="grid grid-cols-5">
+        {tabs.map((tab) => {
+          const isActive =
+            pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-1 px-3 py-1 text-xs ${
-                isActive ? 'text-[#E8734A] font-semibold' : 'text-[#8B7355]'
-              }`}
-            >
-              <span className="text-lg">{item.icon}</span>
-              {item.label}
-            </Link>
+            <li key={tab.href}>
+              <Link
+                href={tab.href}
+                className={`flex flex-col items-center justify-center py-2 text-xs font-medium ${
+                  isActive ? "text-[#E8734A]" : "text-gray-500"
+                }`}
+              >
+                <span className="text-lg leading-none">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </nav>
   );
 }
