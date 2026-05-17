@@ -64,9 +64,7 @@ services:
       # other by name. "db" here refers to the db service above.
       DATABASE_URL: postgresql://pawpals:localdev@db:5432/pawpals
 
-      # This will hold your OpenAI API key. Empty for now.
-      # You'll add the real key in Sprint 5 when you build AI features.
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-placeholder}
+     
 
     # This means: don't start the AI service until the database is running.
     # Without this, the AI service might try to connect to Postgres
