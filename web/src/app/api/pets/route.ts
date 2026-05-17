@@ -41,7 +41,6 @@ export async function POST(req: Request) {
     });
 
     // Fire-and-forget: notify AI service about the new pet
-    // (currently a no-op stub but keeps the integration wired)
     const aiServiceUrl = process.env.AI_SERVICE_URL;
     if (aiServiceUrl) {
       fetch(`${aiServiceUrl}/ai/embed-pet`, {
