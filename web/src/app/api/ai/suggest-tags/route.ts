@@ -40,14 +40,7 @@ export async function POST(request: Request) {
     }
 
     const data = (await response.json()) as { tags?: string[] };
-    if (!Array.isArray(data.tags)) {
-      return NextResponse.json(
-        { error: "AI response did not include tags." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json({ tags: data.tags });
+    return NextResponse.json({ tags: data.tags || [] });
   } catch {
     return NextResponse.json(
       { error: "Unable to suggest tags right now." },
