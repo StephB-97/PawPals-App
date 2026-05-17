@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/ToastProvider';
-import { parseApiErrorMessage } from '@/lib/parse-api-error';
 
 type PetFormData = {
   name: string;
@@ -17,7 +15,6 @@ type PetFormData = {
 
 function PetForm() {
   const router = useRouter();
-  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [bioLoading, setBioLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,10 +57,9 @@ function PetForm() {
     const name = formData.name.trim();
     const species = formData.species.trim();
     if (!name || !species) {
-      setError('Add your pet’s name and species before generating a bio.');
+      setError("Add your pet's name and species before generating a bio.");
       return;
     }
-<<<<<<< HEAD:web/src/app/profile/create-pet/page.tsx
     setBioLoading(true);
     setError(null);
     try {
@@ -80,28 +76,23 @@ function PetForm() {
         }),
       });
       if (!response.ok) {
-        const msg = await parseApiErrorMessage(response);
-        throw new Error(msg);
+        throw new Error('Failed to generate bio.');
       }
       const data = (await response.json()) as { bio?: string };
       if (!data.bio) {
         throw new Error('No bio was returned. Please try again.');
       }
       setFormData(prev => ({ ...prev, bio: data.bio ?? '' }));
-      showToast('Bio added to the form. You can edit it before saving.', 'success');
     } catch (e) {
       const msg =
         e instanceof Error
           ? e.message
           : 'Something went wrong. Please try again.';
       setError(msg);
-      showToast(msg, 'error');
     } finally {
       setBioLoading(false);
     }
   }
-=======
->>>>>>> origin/develop:web/src/app/(main)/profile/create-pet/page.tsx
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
@@ -134,17 +125,14 @@ function PetForm() {
       });
 
       if (!response.ok) {
-        const msg = await parseApiErrorMessage(response);
-        throw new Error(msg);
+        throw new Error('Failed to create pet.');
       }
 
-      showToast('Pet saved successfully!', 'success');
       router.push('/dashboard');
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : 'Something went wrong. Please try again.';
       setError(msg);
-      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }

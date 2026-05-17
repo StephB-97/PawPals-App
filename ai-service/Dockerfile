@@ -22,4 +22,4 @@ COPY . .
 
 # Start the FastAPI server on port 8000
 # --reload makes it auto-restart when you save files (dev mode)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
