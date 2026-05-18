@@ -10,6 +10,7 @@ type Pet = {
   name: string;
   breed: string;
   species: "dog" | "cat";
+  photoUrls: string[];
 };
 
 type Owner = {
@@ -90,7 +91,7 @@ export default function ProfilePage() {
             <div className="mt-4 flex flex-col items-center gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
               {pets.map((pet) => (
                 <div key={pet.id} className="relative w-fit">
-                  <PetCard name={pet.name} breed={pet.breed || ""} species={pet.species} />
+                  <PetCard name={pet.name} breed={pet.breed || ""} species={pet.species} photoUrl={pet.photoUrls?.[0]} />
                   <Link
                     href={`/profile/edit-pet/${pet.id}`}
                     className="absolute right-3 top-3 text-xs font-medium text-orange-500 hover:underline"
