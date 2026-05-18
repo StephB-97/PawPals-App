@@ -23,7 +23,7 @@ if (user?.id) {
   }
 
   console.log('Redirecting to dashboard');
-  redirect('/dashboard');
+  redirect('/discover');
 }
 
   // If not authenticated, show landing page

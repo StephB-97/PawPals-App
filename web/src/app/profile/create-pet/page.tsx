@@ -135,7 +135,7 @@ function PetForm() {
         throw new Error(data.error || 'Failed to create pet');
       }
 
-      router.push('/dashboard');
+      router.push('/discover');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
