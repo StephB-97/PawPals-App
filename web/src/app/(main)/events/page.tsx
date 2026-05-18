@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import RSVPButton from './RSVPButton';
+import { useEffect, useState } from 'react';
 
 type Event = {
   id: string;
@@ -416,6 +418,9 @@ export default function EventsPage() {
                 </div>
                 <div className="text-[12px] text-[#A89279]">
                   👥 {event.attending} attending
+                </div>
+                <div className="mt-3">
+                  <RSVPButton eventId={event.id} />
                 </div>
               </div>
             </div>
