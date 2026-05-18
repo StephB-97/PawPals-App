@@ -79,7 +79,11 @@ export default function ExploreMapView() {
       );
     }
 
+    const handleResize = () => map.resize();
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
       map.remove();
@@ -94,9 +98,16 @@ export default function ExploreMapView() {
 
       try {
         let endpoint = "/api/discover/map";
-        if (selectedSpecies !== "all") {
-          endpoint += `?species=${selectedSpecies}`;
+        const params = new URLSearchParams();
+        if (selectedSpecies !== "all") params.set("species", selectedSpecies);
+
+        if (mapRef.current) {
+          const center = mapRef.current.getCenter();
+          params.set("lat", center.lat.toString());
+          params.set("lng", center.lng.toString());
         }
+
+        if (params.toString()) endpoint += `?${params.toString()}`;
 
         const response = await fetch(endpoint);
         if (!response.ok) {
@@ -154,7 +165,7 @@ export default function ExploreMapView() {
   }
 
   return (
-    <div className="relative h-[calc(100vh-12rem)] min-h-[500px] max-h-screen overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white">
+    <div className="relative h-[calc(100vh-14rem)] min-h-[500px] max-h-screen overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white mb-4">
       <div className="absolute left-3 right-3 top-3 z-20 flex flex-wrap gap-2">
         {filterPills.map((pill) => {
           const active = selectedSpecies === pill.value;
