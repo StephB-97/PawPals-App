@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import FilterPanel from "@/components/discover/FilterPanel";
+import { useFilterStore } from "@/lib/stores/filterStore";
 
 type Pet = {
   id: string;
@@ -22,48 +23,67 @@ export default function DiscoverPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fetchTrigger, setFetchTrigger] = useState(0);
+
+  const { species, sizes, maxDistance } = useFilterStore();
+
+  // Override applyFilters to trigger a refetch
+  useEffect(() => {
+    useFilterStore.setState({
+      applyFilters: () => setFetchTrigger((n) => n + 1),
+    });
+  }, []);
 
   useEffect(() => {
-    fetch("/api/discover/swipe")
+    setLoading(true);
+    setError(null);
+    setCurrentIndex(0);
+
+    const params = new URLSearchParams();
+    if (species && species !== "all") {
+      // The API expects "dog" or "cat", filter store uses "dogs" or "cats"
+      params.set("species", species.replace(/s$/, ""));
+    }
+    params.set("maxDistance", maxDistance.toString());
+
+    fetch(`/api/discover/swipe?${params.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load pets");
         return res.json();
       })
       .then((data) => {
-        setPets(data);
+        // Filter by size client-side if sizes selected
+        let filtered = data;
+        if (sizes.length > 0) {
+          filtered = data.filter((p: Pet) => p.size && sizes.includes(p.size as "S" | "M" | "L"));
+        }
+        setPets(filtered);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [species, sizes, maxDistance, fetchTrigger]);
 
   const currentPet = pets[currentIndex] || null;
 
   async function handleSwipe(liked: boolean) {
     if (!currentPet) return;
-
     try {
       const ownerRes = await fetch("/api/owners/me");
       const owner = await ownerRes.json();
       const myPetId = owner.pets?.[0]?.id;
-
       if (myPetId) {
         await fetch("/api/matches/swipe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            petAId: myPetId,
-            petBId: currentPet.id,
-            liked,
-          }),
+          body: JSON.stringify({ petAId: myPetId, petBId: currentPet.id, liked }),
         });
       }
     } catch (err) {
       console.error("Swipe failed:", err);
     }
-
     setCurrentIndex((prev) => prev + 1);
   }
 
@@ -109,22 +129,14 @@ export default function DiscoverPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              {/* Pet Card */}
               <div className="w-full max-w-sm rounded-2xl border border-[#E8DDD0] bg-white shadow-md overflow-hidden">
-                {/* Photo or emoji */}
                 {currentPet.photoUrls?.length > 0 ? (
-                  <img
-                    src={currentPet.photoUrls[0]}
-                    alt={currentPet.name}
-                    className="h-72 w-full object-cover"
-                  />
+                  <img src={currentPet.photoUrls[0]} alt={currentPet.name} className="h-72 w-full object-cover" />
                 ) : (
                   <div className="h-72 w-full flex items-center justify-center bg-gradient-to-br from-[#FFE8D6] to-[#FFF3EE] text-8xl">
                     {getEmoji(currentPet.species)}
                   </div>
                 )}
-
-                {/* Info */}
                 <div className="p-5">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-[#2E2925]">{currentPet.name}</h2>
@@ -133,68 +145,36 @@ export default function DiscoverPage() {
                   <p className="text-sm text-[#6B655F] mt-1">
                     {currentPet.breed || currentPet.species} · {currentPet.size || "?"} · {currentPet.ageMonths < 12 ? `${currentPet.ageMonths}mo` : `${Math.floor(currentPet.ageMonths / 12)}yr`}
                   </p>
-                  {currentPet.bio && (
-                    <p className="text-sm text-[#6B655F] mt-3">{currentPet.bio}</p>
-                  )}
+                  {currentPet.bio && <p className="text-sm text-[#6B655F] mt-3">{currentPet.bio}</p>}
                   {currentPet.temperament?.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {currentPet.temperament.map((t) => (
-                        <span key={t} className="rounded-full bg-[#FFF3EE] border border-[#E8DDD0] px-3 py-1 text-xs text-[#E8734A] capitalize">
-                          {t}
-                        </span>
+                        <span key={t} className="rounded-full bg-[#FFF3EE] border border-[#E8DDD0] px-3 py-1 text-xs text-[#E8734A] capitalize">{t}</span>
                       ))}
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* Swipe Buttons */}
               <div className="flex gap-6 mt-6">
-                <button
-                  onClick={() => handleSwipe(false)}
-                  className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#E8DDD0] bg-white text-2xl shadow-md transition hover:scale-110"
-                  aria-label="Pass"
-                >
-                  ✕
-                </button>
-                <button
-                  onClick={() => handleSwipe(true)}
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E8734A] text-2xl text-white shadow-md transition hover:scale-110"
-                  aria-label="Like"
-                >
-                  ❤️
-                </button>
+                <button onClick={() => handleSwipe(false)} className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#E8DDD0] bg-white text-2xl shadow-md transition hover:scale-110" aria-label="Pass">✕</button>
+                <button onClick={() => handleSwipe(true)} className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E8734A] text-2xl text-white shadow-md transition hover:scale-110" aria-label="Like">❤️</button>
               </div>
             </div>
           )}
         </section>
       </div>
 
-      {/* Mobile filter overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black/35 transition-opacity duration-300 md:hidden ${
-          isMobileFilterOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        className={`fixed inset-0 z-40 bg-black/35 transition-opacity duration-300 md:hidden ${isMobileFilterOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
         onClick={() => setIsMobileFilterOpen(false)}
         aria-hidden
       />
-
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 h-[82vh] max-h-[720px] rounded-t-3xl bg-[#FAF6F1] p-4 transition-transform duration-300 md:hidden ${
-          isMobileFilterOpen ? "translate-y-0" : "translate-y-full"
-        }`}
-      >
+      <div className={`fixed bottom-0 left-0 right-0 z-50 h-[82vh] max-h-[720px] rounded-t-3xl bg-[#FAF6F1] p-4 transition-transform duration-300 md:hidden ${isMobileFilterOpen ? "translate-y-0" : "translate-y-full"}`}>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[#2E2925]">Filters</h2>
-          <button
-            type="button"
-            onClick={() => setIsMobileFilterOpen(false)}
-            className="text-xl text-[#A89279]"
-          >
-            ✕
-          </button>
+          <button type="button" onClick={() => setIsMobileFilterOpen(false)} className="text-xl text-[#A89279]">✕</button>
         </div>
-        <FilterPanel />
+        <FilterPanel onApply={() => setIsMobileFilterOpen(false)} />
       </div>
     </div>
   );
