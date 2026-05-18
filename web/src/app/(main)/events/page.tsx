@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import RSVPButton from "./RSVPButton"
 
 export default function EventsPage() {
   
