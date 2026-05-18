@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 
 type SpeciesFilter = "all" | "dog" | "cat";
@@ -133,10 +134,18 @@ export default function ExploreMapView() {
     markersRef.current = [];
 
     pets.forEach((pet) => {
-      const markerElement = document.createElement("button");
-      markerElement.type = "button";
-      markerElement.className =
-        "flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#E8734A] text-lg shadow-md";
+      const markerElement = document.createElement("div");
+      markerElement.style.width = "40px";
+      markerElement.style.height = "40px";
+      markerElement.style.borderRadius = "50%";
+      markerElement.style.backgroundColor = "#E8734A";
+      markerElement.style.border = "2px solid white";
+      markerElement.style.display = "flex";
+      markerElement.style.alignItems = "center";
+      markerElement.style.justifyContent = "center";
+      markerElement.style.fontSize = "18px";
+      markerElement.style.cursor = "pointer";
+      markerElement.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
       markerElement.textContent = getPetEmoji(pet.species);
       markerElement.setAttribute("aria-label", `View ${pet.name}`);
       markerElement.addEventListener("click", () => {
