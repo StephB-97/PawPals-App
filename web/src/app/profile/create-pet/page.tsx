@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '@/components/ui/ImageUpload';
 
 type PetFormData = {
   name: string;
@@ -10,14 +11,13 @@ type PetFormData = {
   age: number;
   temperament: string[];
   bio: string;
+  photoUrl: string;
 };
 
 function PetForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
-  const [bioError, setBioError] = useState('');
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
     species: '',
@@ -26,6 +26,7 @@ function PetForm() {
     age: 0,
     temperament: [],
     bio: '',
+    photoUrl: '',
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -37,17 +38,11 @@ function PetForm() {
   }
 
   function handleSpeciesToggle(species: string) {
-    setFormData(prev => ({
-      ...prev,
-      species: species,
-    }));
+    setFormData(prev => ({ ...prev, species }));
   }
 
   function handleSizeToggle(size: string) {
-    setFormData(prev => ({
-      ...prev,
-      size: size,
-    }));
+    setFormData(prev => ({ ...prev, size }));
   }
 
   function handleTemperamentToggle(trait: string) {
@@ -57,50 +52,6 @@ function PetForm() {
         ? prev.temperament.filter(t => t !== trait)
         : [...prev.temperament, trait],
     }));
-  }
-
-  const canGenerateBio =
-    formData.name.trim().length > 0 && formData.species.trim().length > 0;
-
-  async function handleGenerateBio() {
-    if (!canGenerateBio || isGeneratingBio) {
-      return;
-    }
-
-    setIsGeneratingBio(true);
-    setBioError('');
-
-    try {
-      const response = await fetch('/api/ai/generate-bio', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          species: formData.species,
-          breed: formData.breed,
-          size: formData.size,
-          ageMonths: formData.age,
-          temperament: formData.temperament,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data?.bio) {
-        throw new Error('Failed to generate bio.');
-      }
-
-      setFormData(prev => ({
-        ...prev,
-        bio: data.bio,
-      }));
-    } catch {
-      setBioError('Could not generate bio. Please try again.');
-    } finally {
-      setIsGeneratingBio(false);
-    }
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -126,7 +77,7 @@ function PetForm() {
           ageMonths: formData.age,
           temperament: formData.temperament,
           bio: formData.bio || null,
-          photoUrls: [],
+          photoUrls: formData.photoUrl ? [formData.photoUrl] : [],
         }),
       });
 
@@ -160,13 +111,9 @@ function PetForm() {
 
           <form onSubmit={handleSubmit} className="p-5 md:p-8">
             <div className="flex flex-col gap-6 md:grid md:grid-cols-[260px_1fr] md:gap-8">
-              <div className="w-full h-[130px] flex flex-col items-center justify-center border-2 border-dashed rounded-2xl border-[#E8DDD0] bg-[#F9FAFB] md:h-[280px]">
-                <span className="text-3xl md:text-4xl">📷</span>
-                <span className="mt-2 text-sm text-gray-600">Upload Photo</span>
-              </div>
+              <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, photoUrl: url }))} />
 
               <div className="flex flex-col gap-4">
-                {/* Name input */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Name</label>
                   <input
@@ -180,7 +127,6 @@ function PetForm() {
                   />
                 </div>
 
-                {/* Species toggle */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Species</label>
                   <div className="grid grid-cols-2 gap-2">
@@ -209,7 +155,6 @@ function PetForm() {
                   </div>
                 </div>
 
-                {/* Breed */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Breed</label>
                   <input
@@ -222,47 +167,26 @@ function PetForm() {
                   />
                 </div>
 
-                {/* Size toggle */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Size</label>
                   <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleSizeToggle('S')}
-                      className={`rounded-lg p-2.5 text-[#1A1A2E] ${
-                        formData.size === 'S'
-                          ? 'bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]'
-                          : 'border border-[#E8DDD0] bg-white'
-                      }`}
-                    >
-                      S
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSizeToggle('M')}
-                      className={`rounded-lg p-2.5 text-[#1A1A2E] ${
-                        formData.size === 'M'
-                          ? 'bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]'
-                          : 'border border-[#E8DDD0] bg-white'
-                      }`}
-                    >
-                      M
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSizeToggle('L')}
-                      className={`rounded-lg p-2.5 text-[#1A1A2E] ${
-                        formData.size === 'L'
-                          ? 'bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]'
-                          : 'border border-[#E8DDD0] bg-white'
-                      }`}
-                    >
-                      L
-                    </button>
+                    {['S', 'M', 'L'].map(size => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => handleSizeToggle(size)}
+                        className={`rounded-lg p-2.5 text-[#1A1A2E] ${
+                          formData.size === size
+                            ? 'bg-[#FFF1E8] border-2 border-[#E8734A] text-[#E8734A]'
+                            : 'border border-[#E8DDD0] bg-white'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Age */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Age (Months)</label>
                   <input
@@ -274,7 +198,6 @@ function PetForm() {
                   />
                 </div>
 
-                {/* Temperament */}
                 <div className="flex flex-col">
                   <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Temperament</label>
                   <div className="flex flex-wrap gap-2">
@@ -295,32 +218,17 @@ function PetForm() {
                   </div>
                 </div>
 
-                {/* AI Bio Section */}
                 <div className="flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={handleGenerateBio}
-                    disabled={!canGenerateBio || isGeneratingBio}
-                    className={`w-full py-3 px-3.5 rounded-lg border-2 font-semibold transition ${
-                      !canGenerateBio || isGeneratingBio
-                        ? 'cursor-not-allowed border-[#D6C7B8] bg-[#F6F1EA] text-[#A79B90]'
-                        : 'cursor-pointer border-[#E8734A] bg-gradient-to-r from-[#FFD8C2] to-[#FFF1E8] text-[#E8734A]'
-                    }`}
-                  >
-                    {isGeneratingBio ? 'Generating...' : '✨ Generate Bio with AI'}
-                  </button>
-                  {bioError && <p className="text-sm text-red-600">{bioError}</p>}
-
+                  <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Bio</label>
                   <textarea
                     name="bio"
                     value={formData.bio}
-                    placeholder="Bio would appear here..."
+                    placeholder="Write a short bio for your pet..."
                     className="w-full h-[70px] py-3 px-4 text-[#1A1A2E] border-2 border-[#E5E7EB] rounded-lg focus:border-[#E8734A] outline-none"
                     onChange={handleChange}
                   />
                 </div>
 
-                {/* Submit Buttons */}
                 <div className="flex gap-3">
                   <button
                     type="submit"
