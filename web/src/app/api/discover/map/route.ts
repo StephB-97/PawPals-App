@@ -27,7 +27,7 @@ function getDistanceMiles(
 
 function getJitteredCoordinate(baseValue: number) {
   // Roughly within ~0.6 miles in either direction.
-  return baseValue + (Math.random() - 0.5) * 0.018;
+  return baseValue + (Math.random() - 0.5) * 0.003;
 }
 
 export async function GET(request: Request) {
