@@ -105,6 +105,9 @@ export default function EventsPage() {
                 <div className="text-[12px] text-[#A89279]">
                   👥 {event.attending} attending
                 </div>
+                <div className="mt-3">
+                  <RSVPButton eventId={event.id} />
+                </div>
               </div>
             </div>
           ))}
