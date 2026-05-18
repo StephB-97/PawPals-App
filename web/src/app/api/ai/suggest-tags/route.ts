@@ -1,50 +1,59 @@
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-type SuggestTagsRequest = {
-  title?: string;
-  description?: string;
-};
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = (await request.json()) as SuggestTagsRequest;
-    const title = body.title?.trim();
-    const description = body.description?.trim();
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!title || !description) {
+    const owner = await prisma.owner.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!owner) {
+      return NextResponse.json({ error: "Owner not found" }, { status: 404 });
+    }
+
+    const { name, species, breed, size, ageMonths, bio, photoUrls, temperament } =
+      await req.json();
+
+    if (!name || !species) {
       return NextResponse.json(
-        { error: "Title and description are required." },
+        { error: "name and species are required" },
         { status: 400 }
       );
     }
 
-    const aiServiceUrl = process.env.AI_SERVICE_URL;
-    if (!aiServiceUrl) {
-      return NextResponse.json(
-        { error: "AI service is not configured." },
-        { status: 500 }
-      );
-    }
-
-    const response = await fetch(`${aiServiceUrl}/ai/suggest-tags`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description }),
+    const pet = await prisma.pet.create({
+      data: {
+        ownerId: owner.id,
+        name,
+        species,
+        breed,
+        size,
+        ageMonths,
+        bio,
+        photoUrls: photoUrls ?? [],
+        temperament: temperament ?? [],
+      },
     });
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to get tag suggestions from AI service." },
-        { status: 502 }
-      );
+    const aiServiceUrl = process.env.AI_SERVICE_URL;
+    if (aiServiceUrl) {
+      fetch(`${aiServiceUrl}/ai/embed-pet`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pet_id: pet.id }),
+      }).catch((err) => {
+        console.error("AI embed-pet call failed:", err);
+      });
     }
 
-    const data = (await response.json()) as { tags?: string[] };
-    return NextResponse.json({ tags: data.tags || [] });
-  } catch {
-    return NextResponse.json(
-      { error: "Unable to suggest tags right now." },
-      { status: 500 }
-    );
+    return NextResponse.json(pet, { status: 201 });
+  } catch (error) {
+    console.error("POST /api/pets error:", error);
+    return NextResponse.json({ error: "Failed to create pet" }, { status: 500 });
   }
 }

@@ -19,6 +19,7 @@ model Owner {
   city         String?  @db.VarChar(100)
   latitude     Float?
   longitude    Float?
+  location     Unsupported("geometry(Point, 4326)")?  @map("location")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 

@@ -63,8 +63,6 @@ export default function ExploreMapView() {
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
     mapRef.current = map;
-    const handleResize = () => map.resize();
-    window.addEventListener('resize', handleResize);
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -82,11 +80,10 @@ export default function ExploreMapView() {
     }
 
     return () => {
-        window.removeEventListener('resize', handleResize);
-        markersRef.current.forEach((marker) => marker.remove());
-        markersRef.current = [];
-        map.remove();
-        mapRef.current = null;
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+      map.remove();
+      mapRef.current = null;
     };
   }, [token]);
 
@@ -157,7 +154,7 @@ export default function ExploreMapView() {
   }
 
   return (
-    <div className="relative h-[calc(100vh-16rem)] min-h-[500px] max-h-screen overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white mb-4">
+    <div className="relative h-[calc(100vh-12rem)] min-h-[500px] max-h-screen overflow-hidden rounded-2xl border border-[#E8DDD0] bg-white">
       <div className="absolute left-3 right-3 top-3 z-20 flex flex-wrap gap-2">
         {filterPills.map((pill) => {
           const active = selectedSpecies === pill.value;

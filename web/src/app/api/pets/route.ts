@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+import { auth } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function POST(req: Request) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+=======
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -7,10 +18,27 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+>>>>>>> develop
     }
 
     const owner = await prisma.owner.findUnique({
       where: { clerkId: userId },
+<<<<<<< HEAD
+    })
+    if (!owner) {
+      return NextResponse.json({ error: 'Owner not found' }, { status: 404 })
+    }
+
+    const { name, species, breed, size, ageMonths, bio, photoUrls, temperament } =
+      await req.json()
+
+    // Validate required fields
+    if (!name || !species) {
+      return NextResponse.json(
+        { error: 'name and species are required' },
+        { status: 400 }
+      )
+=======
     });
     if (!owner) {
       return NextResponse.json({ error: "Owner not found" }, { status: 404 });
@@ -24,6 +52,7 @@ export async function POST(req: Request) {
         { error: "name and species are required" },
         { status: 400 }
       );
+>>>>>>> develop
     }
 
     const pet = await prisma.pet.create({
@@ -38,6 +67,14 @@ export async function POST(req: Request) {
         photoUrls: photoUrls ?? [],
         temperament: temperament ?? [],
       },
+<<<<<<< HEAD
+    })
+
+    return NextResponse.json(pet, { status: 201 })
+  } catch (error) {
+    console.error('POST /api/pets error:', error)
+    return NextResponse.json({ error: 'Failed to create pet' }, { status: 500 })
+=======
     });
 
     // Fire-and-forget: notify AI service about the new pet
@@ -56,5 +93,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("POST /api/pets error:", error);
     return NextResponse.json({ error: "Failed to create pet" }, { status: 500 });
+>>>>>>> develop
   }
 }

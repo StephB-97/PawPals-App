@@ -16,6 +16,8 @@ function PetForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
+  const [bioError, setBioError] = useState('');
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
     species: '',
@@ -35,11 +37,17 @@ function PetForm() {
   }
 
   function handleSpeciesToggle(species: string) {
-    setFormData(prev => ({ ...prev, species }));
+    setFormData(prev => ({
+      ...prev,
+      species: species,
+    }));
   }
 
   function handleSizeToggle(size: string) {
-    setFormData(prev => ({ ...prev, size }));
+    setFormData(prev => ({
+      ...prev,
+      size: size,
+    }));
   }
 
   function handleTemperamentToggle(trait: string) {
@@ -49,6 +57,50 @@ function PetForm() {
         ? prev.temperament.filter(t => t !== trait)
         : [...prev.temperament, trait],
     }));
+  }
+
+  const canGenerateBio =
+    formData.name.trim().length > 0 && formData.species.trim().length > 0;
+
+  async function handleGenerateBio() {
+    if (!canGenerateBio || isGeneratingBio) {
+      return;
+    }
+
+    setIsGeneratingBio(true);
+    setBioError('');
+
+    try {
+      const response = await fetch('/api/ai/generate-bio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          species: formData.species,
+          breed: formData.breed,
+          size: formData.size,
+          ageMonths: formData.age,
+          temperament: formData.temperament,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.bio) {
+        throw new Error('Failed to generate bio.');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        bio: data.bio,
+      }));
+    } catch {
+      setBioError('Could not generate bio. Please try again.');
+    } finally {
+      setIsGeneratingBio(false);
+    }
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -243,13 +295,26 @@ function PetForm() {
                   </div>
                 </div>
 
-                {/* Bio section */}
+                {/* AI Bio Section */}
                 <div className="flex flex-col gap-2">
-                  <label className="mb-1 block text-xs font-semibold text-[#1A1A2E]">Bio</label>
+                  <button
+                    type="button"
+                    onClick={handleGenerateBio}
+                    disabled={!canGenerateBio || isGeneratingBio}
+                    className={`w-full py-3 px-3.5 rounded-lg border-2 font-semibold transition ${
+                      !canGenerateBio || isGeneratingBio
+                        ? 'cursor-not-allowed border-[#D6C7B8] bg-[#F6F1EA] text-[#A79B90]'
+                        : 'cursor-pointer border-[#E8734A] bg-gradient-to-r from-[#FFD8C2] to-[#FFF1E8] text-[#E8734A]'
+                    }`}
+                  >
+                    {isGeneratingBio ? 'Generating...' : '✨ Generate Bio with AI'}
+                  </button>
+                  {bioError && <p className="text-sm text-red-600">{bioError}</p>}
+
                   <textarea
                     name="bio"
                     value={formData.bio}
-                    placeholder="Write a short bio for your pet..."
+                    placeholder="Bio would appear here..."
                     className="w-full h-[70px] py-3 px-4 text-[#1A1A2E] border-2 border-[#E5E7EB] rounded-lg focus:border-[#E8734A] outline-none"
                     onChange={handleChange}
                   />
